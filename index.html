@@ -1,0 +1,1845 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>OBSIDIAN GOLD — Mezcal de Santiago Matatlan, Oaxaca</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --neon-purple: #b400ff;
+    --neon-purple-bright: #cc00ff;
+    --neon-purple-glow: rgba(180,0,255,0.6);
+    --mirror-gray: #1a1a1f;
+    --mirror-surface: #0d0d12;
+    --mirror-light: #2a2a35;
+    --gold: #d4a017;
+    --gold-bright: #f0c040;
+    --gold-pale: #ffe99a;
+    --cream: #f5ead0;
+    --obsidian: #0a0a0e;
+    --text-light: rgba(245,234,208,0.9);
+    --text-dim: rgba(245,234,208,0.45);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--obsidian);
+    color: var(--cream);
+    font-family: 'Cormorant Garamond', serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ── CUSTOM CURSOR ── */
+  #cursor {
+    position: fixed;
+    width: 12px; height: 12px;
+    background: var(--neon-purple-bright);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.1s, background 0.3s;
+    box-shadow: 0 0 18px var(--neon-purple-glow), 0 0 40px var(--neon-purple-glow);
+    mix-blend-mode: screen;
+  }
+  #cursor-trail {
+    position: fixed;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(180,0,255,0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: left 0.15s ease, top 0.15s ease;
+  }
+
+  /* ── LOADER ── */
+  #loader {
+    position: fixed;
+    inset: 0;
+    background: var(--obsidian);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 1.2s ease, visibility 1.2s;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+
+  .loader-obsidian {
+    width: 90px; height: 90px;
+    position: relative;
+    margin-bottom: 32px;
+  }
+  .loader-obsidian canvas {
+    width: 100%; height: 100%;
+  }
+  .loader-text {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.6em;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+    animation: pulse-text 1.5s ease-in-out infinite;
+  }
+  .loader-bar {
+    width: 180px;
+    height: 1px;
+    background: rgba(180,0,255,0.15);
+    margin-top: 18px;
+    position: relative;
+    overflow: hidden;
+  }
+  .loader-bar::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, var(--neon-purple-bright), transparent);
+    animation: loader-sweep 1.8s ease-in-out infinite;
+  }
+
+  /* ── SECTIONS ── */
+  section { position: relative; overflow: hidden; }
+
+  /* ── HERO ── */
+  #hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: radial-gradient(ellipse at 50% 60%, #16001a 0%, var(--obsidian) 70%);
+  }
+
+  #obsidian-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+  }
+
+  .hero-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    padding: 0 20px;
+  }
+
+  .hero-origin {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    opacity: 0;
+    animation: fadeUp 1s ease 2.5s forwards;
+  }
+
+  .hero-title {
+    line-height: 1;
+    margin-bottom: 6px;
+    overflow: hidden;
+  }
+
+  .word-obsidian {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(48px, 16vw, 82px);
+    color: transparent;
+    -webkit-text-stroke: 1.5px var(--neon-purple-bright);
+    text-shadow:
+      0 0 20px var(--neon-purple-glow),
+      0 0 60px rgba(180,0,255,0.3),
+      0 0 120px rgba(180,0,255,0.15);
+    letter-spacing: 0.08em;
+    position: relative;
+    opacity: 0;
+    transform: translateY(60px) skewY(4deg);
+    animation: titleReveal 1.2s cubic-bezier(0.16,1,0.3,1) 1.2s forwards;
+    filter: drop-shadow(0 0 30px var(--neon-purple-glow));
+  }
+
+  .word-gold {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-weight: 900;
+    font-size: clamp(52px, 18vw, 92px);
+    background: linear-gradient(135deg, #8b6000 0%, #d4a017 20%, #f0c040 45%, #ffe99a 60%, #f0c040 75%, #d4a017 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: 0.12em;
+    filter: drop-shadow(0 0 25px rgba(212,160,23,0.6));
+    opacity: 0;
+    transform: translateY(60px) skewY(-3deg);
+    animation: titleReveal 1.2s cubic-bezier(0.16,1,0.3,1) 1.6s forwards;
+  }
+
+  .hero-divider {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, var(--neon-purple), transparent);
+    margin: 28px auto;
+    opacity: 0;
+    animation: fadeIn 1s 2.8s forwards;
+  }
+
+  .hero-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(13px, 3.8vw, 18px);
+    color: var(--text-dim);
+    letter-spacing: 0.12em;
+    max-width: 320px;
+    line-height: 1.8;
+    opacity: 0;
+    animation: fadeUp 1s ease 3s forwards;
+  }
+
+  .hero-cta {
+    margin-top: 40px;
+    opacity: 0;
+    animation: fadeUp 1s ease 3.3s forwards;
+  }
+  .btn-primary {
+    display: inline-block;
+    padding: 14px 40px;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.5em;
+    text-transform: uppercase;
+    text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    transition: color 0.4s;
+  }
+  .btn-primary::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--gold);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  .btn-primary:hover { color: var(--obsidian); }
+  .btn-primary:hover::before { transform: scaleX(1); }
+  .btn-primary span { position: relative; z-index: 1; }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeIn 1s 3.8s forwards;
+  }
+  .scroll-hint span {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+  }
+  .scroll-line {
+    width: 1px; height: 50px;
+    background: linear-gradient(to bottom, var(--neon-purple-bright), transparent);
+    animation: scrollPulse 2s ease-in-out infinite;
+  }
+
+  /* ── MIRROR MYTH SECTION ── */
+  #mirror-myth {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--obsidian) 0%, #0e001a 50%, var(--obsidian) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px;
+    position: relative;
+  }
+
+  #particles-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  .section-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.6em;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+    margin-bottom: 40px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s, transform 0.8s;
+    position: relative;
+    z-index: 2;
+  }
+  .section-label.visible { opacity: 1; transform: translateY(0); }
+
+  .myth-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(28px, 8vw, 48px);
+    text-align: center;
+    line-height: 1.2;
+    margin-bottom: 48px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s 0.2s, transform 1s 0.2s;
+    position: relative;
+    z-index: 2;
+  }
+  .myth-title.visible { opacity: 1; transform: translateY(0); }
+  .myth-title em {
+    font-style: italic;
+    color: var(--neon-purple-bright);
+    text-shadow: 0 0 30px var(--neon-purple-glow);
+  }
+
+  #soul-mirror-canvas {
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: scale(0.7);
+    transition: opacity 1.2s 0.4s, transform 1.2s 0.4s cubic-bezier(0.16,1,0.3,1);
+    margin: 0 auto 48px;
+    display: block;
+    border: 1px solid rgba(180,0,255,0.2);
+    box-shadow: 0 0 60px rgba(180,0,255,0.15), inset 0 0 60px rgba(0,0,0,0.8);
+  }
+  #soul-mirror-canvas.visible { opacity: 1; transform: scale(1); }
+
+  .myth-text {
+    max-width: 340px;
+    text-align: center;
+    font-size: clamp(14px, 4vw, 17px);
+    line-height: 2;
+    color: var(--text-dim);
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s 0.6s, transform 1s 0.6s;
+  }
+  .myth-text.visible { opacity: 1; transform: translateY(0); }
+  .myth-text strong { color: var(--cream); font-weight: 400; }
+
+  /* ── PRODUCTS ── */
+  #products {
+    background: var(--obsidian);
+    padding: 100px 0;
+  }
+
+  .products-header {
+    text-align: center;
+    padding: 0 24px;
+    margin-bottom: 70px;
+  }
+
+  .products-header h2 {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(26px, 7vw, 42px);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+  }
+
+  .products-header p {
+    font-style: italic;
+    color: var(--text-dim);
+    font-size: 15px;
+  }
+
+  /* Category tabs */
+  .cat-tabs {
+    display: flex;
+    overflow-x: auto;
+    gap: 0;
+    padding: 0 24px;
+    margin-bottom: 48px;
+    scrollbar-width: none;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+  }
+  .cat-tabs::-webkit-scrollbar { display: none; }
+  .cat-tab {
+    flex-shrink: 0;
+    padding: 12px 20px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border: none;
+    background: none;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s;
+    white-space: nowrap;
+  }
+  .cat-tab::after {
+    content: '';
+    position: absolute;
+    bottom: -1px; left: 0; right: 0;
+    height: 1px;
+    background: var(--gold);
+    transform: scaleX(0);
+    transition: transform 0.4s;
+  }
+  .cat-tab.active { color: var(--gold); }
+  .cat-tab.active::after { transform: scaleX(1); }
+
+  .cat-panel { display: none; padding: 0 20px; }
+  .cat-panel.active { display: block; }
+
+  .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .product-card {
+    background: linear-gradient(145deg, rgba(20,20,28,0.9), rgba(10,10,15,0.95));
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 24px 16px;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    transition: border-color 0.4s, transform 0.4s;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.6s, transform 0.6s, border-color 0.4s;
+  }
+  .product-card.visible { opacity: 1; transform: translateY(0); }
+  .product-card:hover { border-color: rgba(212,160,23,0.4); }
+  .product-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(212,160,23,0.06), transparent 70%);
+    opacity: 0;
+    transition: opacity 0.4s;
+  }
+  .product-card:hover::before { opacity: 1; }
+
+  .product-card.featured {
+    grid-column: span 2;
+    border-color: rgba(212,160,23,0.3);
+    background: linear-gradient(145deg, rgba(30,20,5,0.95), rgba(10,8,0,0.98));
+  }
+  .product-card.featured::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at top, rgba(212,160,23,0.08), transparent 70%);
+  }
+
+  .product-badge {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 8px;
+    letter-spacing: 0.4em;
+    text-transform: uppercase;
+    color: var(--neon-purple);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .product-card.featured .product-badge { color: var(--gold); }
+
+  .product-name {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(13px, 3.8vw, 17px);
+    font-weight: 400;
+    line-height: 1.3;
+    margin-bottom: 10px;
+    color: var(--cream);
+  }
+  .product-card.featured .product-name {
+    font-size: clamp(18px, 5vw, 24px);
+    background: linear-gradient(135deg, #d4a017, #f0c040, #ffe99a, #f0c040);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .product-desc {
+    font-style: italic;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.7;
+  }
+
+  .product-icon {
+    font-size: 28px;
+    margin-bottom: 14px;
+    display: block;
+    filter: drop-shadow(0 0 8px rgba(212,160,23,0.4));
+  }
+
+  .gold-particles {
+    position: absolute;
+    top: 0; right: 0;
+    width: 80px; height: 80px;
+    pointer-events: none;
+    opacity: 0.6;
+  }
+
+  /* ── STAR PRODUCT ── */
+  #star-product {
+    min-height: 100vh;
+    background: linear-gradient(180deg, var(--obsidian) 0%, #100800 50%, var(--obsidian) 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 100px 24px;
+    text-align: center;
+    position: relative;
+  }
+
+  #gold-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .star-product-content { position: relative; z-index: 2; }
+
+  .star-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 20px;
+    border: 1px solid rgba(212,160,23,0.4);
+    margin-bottom: 40px;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    text-transform: uppercase;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s, transform 0.8s;
+  }
+  .star-badge.visible { opacity: 1; transform: translateY(0); }
+
+  .star-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(24px, 7vw, 44px);
+    font-weight: 900;
+    line-height: 1.15;
+    margin-bottom: 30px;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 1s 0.2s, transform 1s 0.2s;
+  }
+  .star-title.visible { opacity: 1; transform: translateY(0); }
+
+  .star-title .gold-text {
+    background: linear-gradient(135deg, #8b6000, #d4a017, #f0c040, #ffe99a, #f0c040, #d4a017);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    filter: drop-shadow(0 0 20px rgba(212,160,23,0.4));
+  }
+
+  #scorpion-canvas {
+    width: 260px; height: 260px;
+    margin: 30px auto;
+    display: block;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    transform: scale(0.8);
+    transition: opacity 1.2s 0.4s, transform 1.2s 0.4s cubic-bezier(0.16,1,0.3,1);
+  }
+  #scorpion-canvas.visible { opacity: 1; transform: scale(1); }
+
+  .star-desc {
+    max-width: 320px;
+    margin: 0 auto;
+    font-size: clamp(14px, 4vw, 17px);
+    line-height: 2;
+    color: var(--text-dim);
+    font-style: italic;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 1s 0.6s, transform 1s 0.6s;
+  }
+  .star-desc.visible { opacity: 1; transform: translateY(0); }
+
+  .gold-flakes {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin: 24px 0;
+  }
+  .gold-flake {
+    width: 6px; height: 6px;
+    background: var(--gold-bright);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+    animation: floatFlake 3s ease-in-out infinite;
+    box-shadow: 0 0 8px rgba(240,192,64,0.8);
+  }
+  .gold-flake:nth-child(2) { animation-delay: 0.4s; transform: scale(0.6); }
+  .gold-flake:nth-child(3) { animation-delay: 0.8s; transform: scale(1.3); }
+  .gold-flake:nth-child(4) { animation-delay: 1.2s; transform: scale(0.5); }
+  .gold-flake:nth-child(5) { animation-delay: 1.6s; transform: scale(0.8); }
+
+  /* ── ORIGIN STORY ── */
+  #origin {
+    padding: 100px 24px;
+    background: linear-gradient(180deg, var(--obsidian), #0a0005, var(--obsidian));
+    position: relative;
+  }
+
+  .origin-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+
+  .origin-text-block {
+    opacity: 0;
+    transform: translateX(-30px);
+    transition: opacity 1s, transform 1s;
+  }
+  .origin-text-block.visible { opacity: 1; transform: translateX(0); }
+
+  .origin-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: block;
+  }
+  .origin-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 6vw, 36px);
+    margin-bottom: 24px;
+    line-height: 1.3;
+  }
+  .origin-body {
+    font-size: 15px;
+    line-height: 2;
+    color: var(--text-dim);
+  }
+  .origin-body p + p { margin-top: 16px; }
+
+  .origin-visual {
+    opacity: 0;
+    transform: translateX(30px);
+    transition: opacity 1s 0.3s, transform 1s 0.3s;
+    position: relative;
+    display: flex;
+    justify-content: center;
+  }
+  .origin-visual.visible { opacity: 1; transform: translateX(0); }
+
+  #glyph-canvas {
+    width: 260px; height: 260px;
+    border: 1px solid rgba(180,0,255,0.2);
+    box-shadow: 0 0 40px rgba(180,0,255,0.1), inset 0 0 40px rgba(0,0,0,0.8);
+  }
+
+  /* ── CONTACT ── */
+  #contact {
+    padding: 100px 24px;
+    background: var(--obsidian);
+    text-align: center;
+    position: relative;
+  }
+  #contact::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 1px; height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--neon-purple));
+  }
+
+  .contact-title {
+    font-family: 'Cinzel', serif;
+    font-size: clamp(22px, 6vw, 36px);
+    margin-bottom: 12px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.8s, transform 0.8s;
+  }
+  .contact-title.visible { opacity: 1; transform: translateY(0); }
+
+  .contact-sub {
+    font-style: italic;
+    color: var(--text-dim);
+    margin-bottom: 48px;
+    font-size: 15px;
+    opacity: 0;
+    transition: opacity 0.8s 0.2s;
+  }
+  .contact-sub.visible { opacity: 1; }
+
+  .contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-bottom: 48px;
+  }
+  .contact-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    opacity: 0;
+    transform: translateY(15px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .contact-item.visible { opacity: 1; transform: translateY(0); }
+  .contact-item-label {
+    font-family: 'Rajdhani', sans-serif;
+    font-size: 9px;
+    letter-spacing: 0.5em;
+    color: var(--neon-purple);
+    text-transform: uppercase;
+  }
+  .contact-item-value {
+    font-family: 'Cinzel', serif;
+    font-size: 14px;
+    color: var(--cream);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 40px 24px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    text-align: center;
+  }
+  .footer-logo {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 0.4em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .footer-legal {
+    font-size: 10px;
+    color: rgba(245,234,208,0.2);
+    line-height: 1.8;
+  }
+
+  /* ── KEYFRAMES ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes titleReveal {
+    from { opacity: 0; transform: translateY(60px) skewY(4deg); }
+    to { opacity: 1; transform: translateY(0) skewY(0); }
+  }
+  @keyframes pulse-text {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+  }
+  @keyframes loader-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(200%); }
+  }
+  @keyframes scrollPulse {
+    0% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(0.3); opacity: 0.3; }
+    100% { transform: scaleY(1); opacity: 1; }
+  }
+  @keyframes floatFlake {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-8px) rotate(45deg); }
+  }
+  @keyframes shimmer {
+    0%, 100% { background-position: -200% center; }
+    50% { background-position: 200% center; }
+  }
+
+  /* Horizontal line decorators */
+  .h-line {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 20px 0;
+    justify-content: center;
+  }
+  .h-line::before, .h-line::after {
+    content: '';
+    height: 1px;
+    width: 50px;
+    background: linear-gradient(to right, transparent, rgba(212,160,23,0.4));
+  }
+  .h-line::after { background: linear-gradient(to left, transparent, rgba(212,160,23,0.4)); }
+  .h-line-dot {
+    width: 4px; height: 4px;
+    background: var(--gold);
+    clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+  }
+
+  /* Video-like scan line effect */
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.03) 2px,
+      rgba(0,0,0,0.03) 4px
+    );
+    pointer-events: none;
+    z-index: 9990;
+  }
+  .vignette {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at center, transparent 60%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+    z-index: 9989;
+  }
+</style>
+</head>
+<body>
+
+<div class="scanlines"></div>
+<div class="vignette"></div>
+<div id="cursor"></div>
+<div id="cursor-trail"></div>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="loader-obsidian">
+    <canvas id="loader-canvas" width="90" height="90"></canvas>
+  </div>
+  <div class="loader-text">Invocando el portal</div>
+  <div class="loader-bar"></div>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <canvas id="obsidian-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-origin">Santiago Matatlan · Oaxaca · México</div>
+    <h1 class="hero-title">
+      <span class="word-obsidian">OBSIDIAN</span>
+      <span class="word-gold">GOLD</span>
+    </h1>
+    <div class="h-line"><div class="h-line-dot"></div></div>
+    <p class="hero-tagline">El portal entre dos mundos.<br>El espejo del alma mexica.</p>
+    <div class="hero-cta">
+      <a href="#products" class="btn-primary"><span>Explorar Colección</span></a>
+    </div>
+  </div>
+  <div class="scroll-hint">
+    <span>Descender</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MIRROR MYTH -->
+<section id="mirror-myth">
+  <canvas id="particles-canvas"></canvas>
+  <div class="section-label">— La Obsidiana —</div>
+  <h2 class="myth-title">El <em>Espejo</em> del<br>Alma Mexica</h2>
+  <canvas id="soul-mirror-canvas" width="280" height="280"></canvas>
+  <p class="myth-text">
+    <strong>Tezcatlipoca</strong>, el dios del espejo humeante,<br>
+    portaba un escudo de obsidiana negra<br>
+    en el que se reflejaba el pasado, el presente<br>
+    y los secretos del corazón humano.<br><br>
+    <strong>Obsidian Gold</strong> es ese espejo:<br>
+    oscuro por fuera, luminoso por dentro.
+  </p>
+</section>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="products-header">
+    <div class="section-label" style="margin-bottom:16px; display:block; text-align:center; opacity:1;">— Colección —</div>
+    <h2>Nuestros Mezcales</h2>
+    <div class="h-line"><div class="h-line-dot"></div></div>
+    <p>Destilados con alma, embotellados con propósito</p>
+  </div>
+
+  <div class="cat-tabs">
+    <button class="cat-tab active" onclick="switchTab('naturales')">Naturales</button>
+    <button class="cat-tab" onclick="switchTab('cremas')">Cremas</button>
+    <button class="cat-tab" onclick="switchTab('licores')">Licores</button>
+    <button class="cat-tab" onclick="switchTab('especiales')">Especiales</button>
+  </div>
+
+  <!-- NATURALES -->
+  <div class="cat-panel active" id="tab-naturales">
+    <div class="product-grid">
+      <div class="product-card" data-delay="0">
+        <span class="product-badge">● Natural</span>
+        <span class="product-icon">🌿</span>
+        <div class="product-name">Blanco<br>Natural</div>
+        <p class="product-desc">Puro, cristalino. El alma del agave sin máscaras. Primera destilación de Santiago Matatlan.</p>
+      </div>
+      <div class="product-card" data-delay="100">
+        <span class="product-badge">● Natural</span>
+        <span class="product-icon">🪲</span>
+        <div class="product-name">Con<br>Gusano</div>
+        <p class="product-desc">Tradición milenaria. El gusano de maguey que bendice y transforma cada botella.</p>
+      </div>
+      <div class="product-card" data-delay="200">
+        <span class="product-badge">● Añejo</span>
+        <span class="product-icon">🍗</span>
+        <div class="product-name">Añejo<br>de Pechuga</div>
+        <p class="product-desc">Tercera destilación con pechuga de guajolote. Ritual. Ceremonia. Origen.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CREMAS -->
+  <div class="cat-panel" id="tab-cremas">
+    <div class="product-grid">
+      <div class="product-card" data-delay="0">
+        <span class="product-badge">● Crema</span>
+        <span class="product-icon">☕</span>
+        <div class="product-name">Crema<br>de Café</div>
+        <p class="product-desc">Aromas de café oaxaqueño con el fondo ahumado del mezcal artesanal.</p>
+      </div>
+      <div class="product-card" data-delay="100">
+        <span class="product-badge">● Crema</span>
+        <span class="product-icon">🌰</span>
+        <div class="product-name">Crema<br>de Piñón</div>
+        <p class="product-desc">Nuez de piñón tostado. Suave, elegante y profundo en cada sorbo.</p>
+      </div>
+      <div class="product-card" data-delay="200">
+        <span class="product-badge">● Crema</span>
+        <span class="product-icon">🍃</span>
+        <div class="product-name">Crema<br>de Pistache</div>
+        <p class="product-desc">Verde brillante, sabor terroso y dulce. La crema más singular de la colección.</p>
+      </div>
+      <div class="product-card" data-delay="300">
+        <span class="product-badge">● Crema</span>
+        <span class="product-icon">🍬</span>
+        <div class="product-name">Crema<br>de Mazapán</div>
+        <p class="product-desc">Almendra y azúcar de caña. Dulzura que abraza el humo ancestral del agave.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- LICORES -->
+  <div class="cat-panel" id="tab-licores">
+    <div class="product-grid">
+      <div class="product-card" data-delay="0">
+        <span class="product-badge">● Licor</span>
+        <span class="product-icon">🍓</span>
+        <div class="product-name">Frutos<br>Rojos</div>
+        <p class="product-desc">Frambuesa, zarzamora y fresa silvestre bailando con el espíritu del agave.</p>
+      </div>
+      <div class="product-card" data-delay="100">
+        <span class="product-badge">● Licor</span>
+        <span class="product-icon">🌺</span>
+        <div class="product-name">Maracuyá</div>
+        <p class="product-desc">Pasión tropical del trópico mexicano. Ácido, vivo, apasionado.</p>
+      </div>
+      <div class="product-card" data-delay="200">
+        <span class="product-badge">● Licor</span>
+        <span class="product-icon">🫐</span>
+        <div class="product-name">Mora<br>Azul</div>
+        <p class="product-desc">Blueberry silvestre de la sierra. Oscuro como la obsidiana, dulce como la tierra.</p>
+      </div>
+      <div class="product-card" data-delay="300">
+        <span class="product-badge">● Licor</span>
+        <span class="product-icon">🍏</span>
+        <div class="product-name">Frutos<br>Verdes</div>
+        <p class="product-desc">Frescura de manzana verde, kiwi y lima. El lado luminoso de la obsidiana.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ESPECIALES -->
+  <div class="cat-panel" id="tab-especiales">
+    <div class="product-grid">
+      <div class="product-card featured" data-delay="0">
+        <canvas class="gold-particles" id="card-gold-canvas" width="80" height="80"></canvas>
+        <span class="product-badge">★ Producto Estrella</span>
+        <span class="product-icon">🦂</span>
+        <div class="product-name">Doble Alacran<br>con Ojuelas de<br>Oro 24K</div>
+        <div class="gold-flakes" style="justify-content:flex-start;margin:12px 0;">
+          <div class="gold-flake"></div>
+          <div class="gold-flake"></div>
+          <div class="gold-flake"></div>
+          <div class="gold-flake"></div>
+          <div class="gold-flake"></div>
+        </div>
+        <p class="product-desc">Nuestro emblema. Doble alacran en reposo dentro del mezcal más puro, coronado con ojuelas de oro de 24 kilates que flotan como constelaciones en la botella. Una obra de arte líquida.</p>
+      </div>
+      <div class="product-card" data-delay="100">
+        <span class="product-badge">● Especial</span>
+        <span class="product-icon">🌵</span>
+        <div class="product-name">Doble</div>
+        <p class="product-desc">Doble destilación. Doble carácter. Doble profundidad.</p>
+      </div>
+      <div class="product-card" data-delay="200">
+        <span class="product-badge">● Especial</span>
+        <span class="product-icon">🔥</span>
+        <div class="product-name">Doble<br>Recocido</div>
+        <p class="product-desc">Destilado y recocido dos veces. Fuerza y refinamiento en perfecta tensión.</p>
+      </div>
+      <div class="product-card" data-delay="300">
+        <span class="product-badge">● Especial</span>
+        <span class="product-icon">🐍</span>
+        <div class="product-name">Con<br>Víbora</div>
+        <p class="product-desc">La serpiente sagrada en cada botella. Potencia y misterio ancestral.</p>
+      </div>
+      <div class="product-card" data-delay="400">
+        <span class="product-badge">● Especial</span>
+        <span class="product-icon">🦂</span>
+        <div class="product-name">Con<br>Alacran</div>
+        <p class="product-desc">El guardián del mezcal. El alacran oaxaqueño que marca el estilo Obsidian Gold.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STAR PRODUCT CINEMATIC -->
+<section id="star-product">
+  <canvas id="gold-canvas"></canvas>
+  <div class="star-product-content">
+    <div class="star-badge">★ &nbsp; Producto Insignia &nbsp; ★</div>
+    <h2 class="star-title">
+      Doble Alacran<br>
+      <span class="gold-text">Ojuelas de Oro 24K</span>
+    </h2>
+    <canvas id="scorpion-canvas" width="260" height="260"></canvas>
+    <div class="gold-flakes" style="margin: 20px 0 30px;">
+      <div class="gold-flake"></div>
+      <div class="gold-flake"></div>
+      <div class="gold-flake"></div>
+      <div class="gold-flake"></div>
+      <div class="gold-flake"></div>
+    </div>
+    <p class="star-desc">
+      Dos alacranes en perfecta armonía,<br>
+      dormidos en el mezcal más puro de Oaxaca.<br>
+      Coronados por ojuelas de oro de 24 kilates<br>
+      que danzan con cada movimiento de la botella.<br><br>
+      <em>No es una bebida. Es un portal dorado.</em>
+    </p>
+  </div>
+</section>
+
+<!-- ORIGIN -->
+<section id="origin">
+  <div class="origin-grid">
+    <div class="origin-text-block">
+      <span class="origin-label">— Santiago Matatlan, Oaxaca —</span>
+      <h2 class="origin-title">La Capital<br>Mundial del<br>Mezcal</h2>
+      <div class="origin-body">
+        <p>En las faldas de la Sierra Juárez, donde el agave espadín crece libre y salvaje, nació <strong>Obsidian Gold</strong>. Santiago Matatlan, reconocida mundialmente como la capital del mezcal, es nuestra raíz y nuestra razón.</p>
+        <p>Cada botella es un acto de memoria. De respeto a los maestros mezcaleros que destilaron el alma de Oaxaca durante generaciones.</p>
+        <p>La obsidiana, roca volcánica sagrada de los mexicas, nos da nombre. Como ella, nuestro mezcal refleja la verdad: sin adornos, sin engaños. Solo fuego, tierra y tiempo.</p>
+      </div>
+    </div>
+    <div class="origin-visual">
+      <canvas id="glyph-canvas" width="260" height="260"></canvas>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <h2 class="contact-title">Invocar el Portal</h2>
+  <div class="h-line" style="margin:16px 0;"><div class="h-line-dot"></div></div>
+  <p class="contact-sub">Santiago Matatlan, Oaxaca, México</p>
+  <div class="contact-info">
+    <div class="contact-item">
+      <span class="contact-item-label">Ubicación</span>
+      <span class="contact-item-value">Santiago Matatlan, Oaxaca</span>
+    </div>
+    <div class="contact-item">
+      <span class="contact-item-label">Pedidos</span>
+      <span class="contact-item-value">obsidiangold.mx</span>
+    </div>
+    <div class="contact-item">
+      <span class="contact-item-label">Mezcal desde</span>
+      <span class="contact-item-value">Oaxaca · para el mundo</span>
+    </div>
+  </div>
+  <a href="#hero" class="btn-primary"><span>Volver al Portal</span></a>
+</section>
+
+<footer>
+  <div class="footer-logo">Obsidian Gold · Mezcal Artesanal</div>
+  <div class="footer-legal">
+    Santiago Matatlan, Oaxaca, México<br>
+    Hecho a mano con agave espadín<br>
+    El abuso del alcohol es perjudicial para la salud · +18
+  </div>
+</footer>
+
+<script>
+// ── CURSOR ──
+const cursor = document.getElementById('cursor');
+const trail = document.getElementById('cursor-trail');
+let mx = 0, my = 0;
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  cursor.style.left = mx + 'px';
+  cursor.style.top = my + 'px';
+  setTimeout(() => {
+    trail.style.left = mx + 'px';
+    trail.style.top = my + 'px';
+  }, 80);
+});
+
+// Touch support
+document.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  cursor.style.left = t.clientX + 'px';
+  cursor.style.top = t.clientY + 'px';
+}, { passive: true });
+
+// ── LOADER ANIMATION ──
+const lc = document.getElementById('loader-canvas');
+const lctx = lc.getContext('2d');
+let loaderAngle = 0;
+function drawLoaderObsidian() {
+  lctx.clearRect(0, 0, 90, 90);
+  const cx = 45, cy = 45, r = 35;
+  lctx.save();
+  lctx.translate(cx, cy);
+  lctx.rotate(loaderAngle);
+  // Draw obsidian shard shape
+  const shards = 8;
+  for (let i = 0; i < shards; i++) {
+    const a = (i / shards) * Math.PI * 2;
+    const a2 = ((i + 0.5) / shards) * Math.PI * 2;
+    const outerR = r * (0.7 + 0.3 * Math.sin(i * 1.7 + loaderAngle * 3));
+    const innerR = r * 0.3;
+    lctx.beginPath();
+    lctx.moveTo(Math.cos(a) * innerR, Math.sin(a) * innerR);
+    lctx.lineTo(Math.cos(a2) * outerR * 0.6, Math.sin(a2) * outerR * 0.6);
+    lctx.lineTo(Math.cos(a + Math.PI * 2 / shards) * innerR, Math.sin(a + Math.PI * 2 / shards) * innerR);
+    const grad = lctx.createLinearGradient(0, -r, 0, r);
+    grad.addColorStop(0, `rgba(180,0,255,${0.3 + 0.5 * ((i / shards))})`)
+    grad.addColorStop(1, 'rgba(80,0,120,0.1)');
+    lctx.fillStyle = grad;
+    lctx.fill();
+    // outer tip
+    lctx.beginPath();
+    lctx.moveTo(Math.cos(a2) * outerR * 0.5, Math.sin(a2) * outerR * 0.5);
+    lctx.lineTo(Math.cos(a2) * outerR, Math.sin(a2) * outerR);
+    lctx.lineTo(Math.cos(a2 + 0.15) * outerR * 0.7, Math.sin(a2 + 0.15) * outerR * 0.7);
+    lctx.fillStyle = `rgba(200,0,255,${0.6 - i * 0.05})`;
+    lctx.fill();
+  }
+  // Center glow
+  const cg = lctx.createRadialGradient(0, 0, 0, 0, 0, 20);
+  cg.addColorStop(0, 'rgba(200,0,255,0.8)');
+  cg.addColorStop(1, 'rgba(100,0,150,0)');
+  lctx.beginPath();
+  lctx.arc(0, 0, 18, 0, Math.PI * 2);
+  lctx.fillStyle = cg;
+  lctx.fill();
+  lctx.restore();
+  loaderAngle += 0.015;
+  requestAnimationFrame(drawLoaderObsidian);
+}
+drawLoaderObsidian();
+
+// Hide loader after page loads
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    document.getElementById('loader').classList.add('hidden');
+  }, 2800);
+});
+
+// ── HERO CANVAS: Obsidian particle mirror field ──
+const heroCanvas = document.getElementById('obsidian-canvas');
+const hctx = heroCanvas.getContext('2d');
+let hW, hH, heroParticles = [];
+
+function resizeHero() {
+  hW = heroCanvas.width = heroCanvas.offsetWidth;
+  hH = heroCanvas.height = heroCanvas.offsetHeight;
+}
+resizeHero();
+window.addEventListener('resize', resizeHero);
+
+class HeroParticle {
+  constructor() { this.reset(); }
+  reset() {
+    this.x = Math.random() * hW;
+    this.y = Math.random() * hH;
+    this.size = Math.random() * 1.5 + 0.3;
+    this.speedX = (Math.random() - 0.5) * 0.2;
+    this.speedY = (Math.random() - 0.5) * 0.2;
+    this.life = Math.random();
+    this.maxLife = Math.random() * 0.5 + 0.5;
+    this.color = Math.random() > 0.6 ? 'purple' : 'gold';
+  }
+  update() {
+    this.x += this.speedX;
+    this.y += this.speedY;
+    this.life += 0.003;
+    if (this.life > this.maxLife) this.reset();
+  }
+  draw() {
+    const alpha = Math.sin((this.life / this.maxLife) * Math.PI) * 0.7;
+    if (this.color === 'purple') {
+      hctx.fillStyle = `rgba(180,0,255,${alpha})`;
+      hctx.shadowColor = 'rgba(180,0,255,0.8)';
+    } else {
+      hctx.fillStyle = `rgba(212,160,23,${alpha})`;
+      hctx.shadowColor = 'rgba(212,160,23,0.8)';
+    }
+    hctx.shadowBlur = 8;
+    hctx.beginPath();
+    hctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+    hctx.fill();
+    hctx.shadowBlur = 0;
+  }
+}
+
+// Create reflective obsidian shards in background
+class ObsidianShard {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    this.x = Math.random() * hW;
+    this.y = Math.random() * hH;
+    this.vx = (Math.random() - 0.5) * 0.05;
+    this.vy = (Math.random() - 0.5) * 0.05;
+    this.size = Math.random() * 40 + 15;
+    this.angle = Math.random() * Math.PI;
+    this.va = (Math.random() - 0.5) * 0.002;
+    this.alpha = Math.random() * 0.04 + 0.01;
+    this.sides = Math.floor(Math.random() * 3) + 3;
+  }
+  update() {
+    this.x += this.vx; this.y += this.vy; this.angle += this.va;
+    if (this.x < -100 || this.x > hW + 100 || this.y < -100 || this.y > hH + 100) this.reset();
+  }
+  draw() {
+    hctx.save();
+    hctx.translate(this.x, this.y);
+    hctx.rotate(this.angle);
+    hctx.beginPath();
+    for (let i = 0; i < this.sides; i++) {
+      const a = (i / this.sides) * Math.PI * 2;
+      const r = this.size * (0.7 + 0.3 * Math.sin(i * 2.3));
+      i === 0 ? hctx.moveTo(Math.cos(a)*r, Math.sin(a)*r) : hctx.lineTo(Math.cos(a)*r, Math.sin(a)*r);
+    }
+    hctx.closePath();
+    const grad = hctx.createLinearGradient(-this.size, -this.size, this.size, this.size);
+    grad.addColorStop(0, `rgba(80,0,120,${this.alpha * 2})`);
+    grad.addColorStop(0.5, `rgba(140,0,180,${this.alpha * 0.5})`);
+    grad.addColorStop(1, `rgba(20,0,30,${this.alpha})`);
+    hctx.fillStyle = grad;
+    hctx.strokeStyle = `rgba(180,0,255,${this.alpha * 3})`;
+    hctx.lineWidth = 0.5;
+    hctx.fill();
+    hctx.stroke();
+    hctx.restore();
+  }
+}
+
+for (let i = 0; i < 150; i++) heroParticles.push(new HeroParticle());
+const shards = [];
+for (let i = 0; i < 20; i++) shards.push(new ObsidianShard());
+
+let heroTime = 0;
+let mouseHX = hW/2, mouseHY = hH/2;
+document.addEventListener('mousemove', e => { mouseHX = e.clientX; mouseHY = e.clientY; });
+
+function animateHero() {
+  hctx.fillStyle = 'rgba(10,10,14,0.15)';
+  hctx.fillRect(0, 0, hW, hH);
+  heroTime += 0.005;
+
+  // Shards
+  shards.forEach(s => { s.update(); s.draw(); });
+
+  // Ripple from mouse position
+  const rx = mouseHX / hW, ry = mouseHY / hH;
+  const rippleGrad = hctx.createRadialGradient(mouseHX, mouseHY, 0, mouseHX, mouseHY, 200);
+  rippleGrad.addColorStop(0, 'rgba(180,0,255,0.04)');
+  rippleGrad.addColorStop(1, 'transparent');
+  hctx.fillStyle = rippleGrad;
+  hctx.fillRect(0, 0, hW, hH);
+
+  // Pulsing center vortex
+  for (let ring = 0; ring < 3; ring++) {
+    const r = 80 + ring * 60 + Math.sin(heroTime + ring) * 20;
+    const alpha = 0.08 - ring * 0.02;
+    hctx.beginPath();
+    hctx.arc(hW/2, hH * 0.5, r, 0, Math.PI * 2);
+    hctx.strokeStyle = `rgba(180,0,255,${alpha})`;
+    hctx.lineWidth = 1;
+    hctx.stroke();
+  }
+
+  heroParticles.forEach(p => { p.update(); p.draw(); });
+
+  // Connecting lines between close particles
+  hctx.lineWidth = 0.3;
+  for (let i = 0; i < heroParticles.length; i++) {
+    for (let j = i + 1; j < heroParticles.length; j++) {
+      const dx = heroParticles[i].x - heroParticles[j].x;
+      const dy = heroParticles[i].y - heroParticles[j].y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 60) {
+        const alpha = (1 - dist / 60) * 0.12;
+        hctx.strokeStyle = `rgba(180,0,255,${alpha})`;
+        hctx.beginPath();
+        hctx.moveTo(heroParticles[i].x, heroParticles[i].y);
+        hctx.lineTo(heroParticles[j].x, heroParticles[j].y);
+        hctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animateHero);
+}
+animateHero();
+
+// ── SOUL MIRROR CANVAS (Obsidian reflection animation) ──
+const smc = document.getElementById('soul-mirror-canvas');
+const smctx = smc.getContext('2d');
+let smTime = 0;
+
+function drawSoulMirror() {
+  smctx.clearRect(0, 0, 280, 280);
+  const cx = 140, cy = 140, r = 128;
+
+  // Black mirror base
+  const mirrorGrad = smctx.createRadialGradient(cx, cy, 0, cx, cy, r);
+  mirrorGrad.addColorStop(0, 'rgba(30,5,40,0.95)');
+  mirrorGrad.addColorStop(0.7, 'rgba(10,0,15,0.98)');
+  mirrorGrad.addColorStop(1, 'rgba(0,0,0,1)');
+  smctx.beginPath();
+  smctx.arc(cx, cy, r, 0, Math.PI * 2);
+  smctx.fillStyle = mirrorGrad;
+  smctx.fill();
+
+  // Smoke / soul wisps
+  for (let w = 0; w < 8; w++) {
+    const wAngle = (w / 8) * Math.PI * 2 + smTime * (w % 2 === 0 ? 0.3 : -0.2);
+    const wR = 40 + 30 * Math.sin(smTime * 1.5 + w);
+    const wx = cx + Math.cos(wAngle) * wR;
+    const wy = cy + Math.sin(wAngle) * wR;
+    const wGrad = smctx.createRadialGradient(wx, wy, 0, wx, wy, 30);
+    wGrad.addColorStop(0, `rgba(150,0,200,${0.15 + 0.1 * Math.sin(smTime + w)})`);
+    wGrad.addColorStop(1, 'transparent');
+    smctx.beginPath();
+    smctx.arc(wx, wy, 30, 0, Math.PI * 2);
+    smctx.fillStyle = wGrad;
+    smctx.fill();
+  }
+
+  // Reflection lattice (mirror grid)
+  smctx.save();
+  smctx.beginPath();
+  smctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
+  smctx.clip();
+  for (let line = 0; line < 16; line++) {
+    const a = (line / 16) * Math.PI * 2 + smTime * 0.05;
+    const alpha = 0.04 + 0.02 * Math.sin(smTime * 2 + line);
+    smctx.beginPath();
+    smctx.moveTo(cx, cy);
+    smctx.lineTo(cx + Math.cos(a) * r, cy + Math.sin(a) * r);
+    smctx.strokeStyle = `rgba(180,0,255,${alpha})`;
+    smctx.lineWidth = 0.5;
+    smctx.stroke();
+  }
+  smctx.restore();
+
+  // Floating glyphs (Nahui Ollin + Tezcatlipoca symbols)
+  const glyphs = ['☽', '✦', '◈', '⬟', '✧', '⊕'];
+  for (let g = 0; g < glyphs.length; g++) {
+    const ga = (g / glyphs.length) * Math.PI * 2 + smTime * 0.4;
+    const gr = 60 + 20 * Math.sin(smTime * 0.7 + g);
+    const gx = cx + Math.cos(ga) * gr;
+    const gy = cy + Math.sin(ga) * gr;
+    const galpha = 0.3 + 0.2 * Math.sin(smTime * 1.2 + g);
+    smctx.font = '14px serif';
+    smctx.fillStyle = `rgba(180,0,255,${galpha})`;
+    smctx.textAlign = 'center';
+    smctx.textBaseline = 'middle';
+    smctx.fillText(glyphs[g], gx, gy);
+  }
+
+  // Central eye / soul
+  const eyeGrad = smctx.createRadialGradient(cx, cy, 0, cx, cy, 35);
+  eyeGrad.addColorStop(0, `rgba(220,0,255,${0.5 + 0.3 * Math.sin(smTime * 2)})`);
+  eyeGrad.addColorStop(0.4, `rgba(140,0,180,0.3)`);
+  eyeGrad.addColorStop(1, 'transparent');
+  smctx.beginPath();
+  smctx.arc(cx, cy, 35, 0, Math.PI * 2);
+  smctx.fillStyle = eyeGrad;
+  smctx.fill();
+
+  // Pupil (obsidian)
+  smctx.beginPath();
+  smctx.arc(cx, cy, 12, 0, Math.PI * 2);
+  smctx.fillStyle = 'rgba(5,0,8,0.95)';
+  smctx.fill();
+  smctx.strokeStyle = 'rgba(200,0,255,0.8)';
+  smctx.lineWidth = 0.5;
+  smctx.stroke();
+
+  // Outer purple ring
+  smctx.beginPath();
+  smctx.arc(cx, cy, r - 2, 0, Math.PI * 2);
+  smctx.strokeStyle = `rgba(180,0,255,${0.3 + 0.1 * Math.sin(smTime)})`;
+  smctx.lineWidth = 1;
+  smctx.stroke();
+
+  smTime += 0.012;
+  requestAnimationFrame(drawSoulMirror);
+}
+drawSoulMirror();
+
+// ── GOLD / SCORPION CANVAS ──
+const sc = document.getElementById('scorpion-canvas');
+const sctx = sc && sc.getContext('2d');
+let scTime = 0;
+
+function drawScorpion() {
+  if (!sctx) return;
+  sctx.clearRect(0, 0, 260, 260);
+  const cx = 130, cy = 130;
+
+  // Outer glow
+  const outerGlow = sctx.createRadialGradient(cx, cy, 80, cx, cy, 128);
+  outerGlow.addColorStop(0, 'rgba(212,160,23,0.15)');
+  outerGlow.addColorStop(1, 'transparent');
+  sctx.fillStyle = outerGlow;
+  sctx.beginPath();
+  sctx.arc(cx, cy, 128, 0, Math.PI * 2);
+  sctx.fill();
+
+  // Gold particles orbiting
+  for (let p = 0; p < 24; p++) {
+    const angle = (p / 24) * Math.PI * 2 + scTime * (p % 2 === 0 ? 0.5 : -0.3);
+    const orbitR = 85 + 20 * Math.sin(scTime * 2 + p * 0.5);
+    const px = cx + Math.cos(angle) * orbitR;
+    const py = cy + Math.sin(angle) * orbitR;
+    const size = 1.5 + Math.random() * 2;
+    const alpha = 0.4 + 0.5 * Math.sin(scTime * 3 + p);
+    sctx.beginPath();
+    sctx.arc(px, py, size, 0, Math.PI * 2);
+    sctx.fillStyle = `rgba(240,192,64,${alpha})`;
+    sctx.shadowColor = 'rgba(240,192,64,0.9)';
+    sctx.shadowBlur = 6;
+    sctx.fill();
+    sctx.shadowBlur = 0;
+  }
+
+  // Scorpion body (stylized vector)
+  sctx.save();
+  sctx.translate(cx, cy);
+  sctx.scale(1.1, 1.1);
+
+  const bodyGrad = sctx.createLinearGradient(-30, -40, 30, 40);
+  bodyGrad.addColorStop(0, '#f0c040');
+  bodyGrad.addColorStop(0.5, '#d4a017');
+  bodyGrad.addColorStop(1, '#8b6000');
+
+  // TAIL
+  sctx.beginPath();
+  const tailPts = [[0,-30],[5,-55],[15,-70],[10,-85],[-5,-90],[-15,-80],[-10,-65],[0,-50]];
+  sctx.moveTo(tailPts[0][0], tailPts[0][1]);
+  for (let tp = 1; tp < tailPts.length; tp++) {
+    sctx.lineTo(tailPts[tp][0], tailPts[tp][1]);
+  }
+  sctx.strokeStyle = bodyGrad;
+  sctx.lineWidth = 4;
+  sctx.lineCap = 'round';
+  sctx.stroke();
+
+  // Stinger
+  sctx.beginPath();
+  sctx.moveTo(-10, -80);
+  sctx.lineTo(-25, -100);
+  sctx.lineWidth = 2;
+  sctx.strokeStyle = '#f0c040';
+  sctx.shadowColor = 'rgba(240,192,64,0.8)';
+  sctx.shadowBlur = 10;
+  sctx.stroke();
+  sctx.shadowBlur = 0;
+
+  // Body segments
+  const segments = [
+    [0, 0, 22, 16],
+    [0, -16, 20, 14],
+    [0, -30, 16, 12],
+    [0, 12, 24, 18],
+    [0, 28, 20, 14],
+    [0, 44, 16, 12],
+    [0, 58, 12, 10],
+  ];
+  segments.forEach(([x, y, w, h], i) => {
+    sctx.beginPath();
+    sctx.ellipse(x, y, w, h, 0, 0, Math.PI * 2);
+    sctx.fillStyle = bodyGrad;
+    sctx.fill();
+    sctx.strokeStyle = 'rgba(100,70,0,0.5)';
+    sctx.lineWidth = 0.5;
+    sctx.stroke();
+  });
+
+  // Claws
+  for (let side = -1; side <= 1; side += 2) {
+    sctx.beginPath();
+    sctx.moveTo(side * 20, 44);
+    sctx.lineTo(side * 45, 60);
+    sctx.lineTo(side * 55, 50);
+    sctx.moveTo(side * 45, 60);
+    sctx.lineTo(side * 55, 70);
+    sctx.strokeStyle = '#d4a017';
+    sctx.lineWidth = 3;
+    sctx.lineCap = 'round';
+    sctx.stroke();
+  }
+
+  // Legs (4 pairs)
+  for (let leg = 0; leg < 4; leg++) {
+    const ly = -10 + leg * 18;
+    for (let side = -1; side <= 1; side += 2) {
+      sctx.beginPath();
+      sctx.moveTo(side * 20, ly);
+      sctx.lineTo(side * 42, ly + 10 * side);
+      sctx.lineTo(side * 48, ly + 5 + 10 * side);
+      sctx.strokeStyle = 'rgba(212,160,23,0.8)';
+      sctx.lineWidth = 1.5;
+      sctx.stroke();
+    }
+  }
+
+  // Eyes
+  for (let e = -1; e <= 1; e += 2) {
+    sctx.beginPath();
+    sctx.arc(e * 8, -55, 3, 0, Math.PI * 2);
+    sctx.fillStyle = `rgba(255,220,50,${0.7 + 0.3 * Math.sin(scTime * 4)})`;
+    sctx.shadowColor = 'rgba(255,220,50,1)';
+    sctx.shadowBlur = 8;
+    sctx.fill();
+    sctx.shadowBlur = 0;
+  }
+
+  sctx.restore();
+
+  // Gold ojuelas floating
+  for (let f = 0; f < 12; f++) {
+    const fx = cx + (Math.random() - 0.5) * 200;
+    const fy = cy + (Math.random() - 0.5) * 200;
+    const fSize = 2 + Math.random() * 4;
+    const fAlpha = Math.random() * 0.6;
+    sctx.save();
+    sctx.translate(fx, fy);
+    sctx.rotate(Math.random() * Math.PI);
+    sctx.beginPath();
+    sctx.moveTo(0, -fSize); sctx.lineTo(fSize, 0);
+    sctx.lineTo(0, fSize); sctx.lineTo(-fSize, 0);
+    sctx.closePath();
+    sctx.fillStyle = `rgba(240,192,64,${fAlpha})`;
+    sctx.shadowColor = 'rgba(240,192,64,0.8)';
+    sctx.shadowBlur = 4;
+    sctx.fill();
+    sctx.shadowBlur = 0;
+    sctx.restore();
+  }
+
+  scTime += 0.02;
+  requestAnimationFrame(drawScorpion);
+}
+drawScorpion();
+
+// ── GOLD BACKGROUND CANVAS ──
+const goldBg = document.getElementById('gold-canvas');
+const gbctx = goldBg && goldBg.getContext('2d');
+let gbTime = 0;
+
+function resizeGold() {
+  if (!goldBg) return;
+  goldBg.width = goldBg.offsetWidth;
+  goldBg.height = goldBg.offsetHeight;
+}
+resizeGold();
+window.addEventListener('resize', resizeGold);
+
+function animateGoldBg() {
+  if (!gbctx) return;
+  const W = goldBg.width, H = goldBg.height;
+  gbctx.fillStyle = 'rgba(16,8,0,0.2)';
+  gbctx.fillRect(0, 0, W, H);
+
+  for (let i = 0; i < 3; i++) {
+    const x = W * (0.3 + i * 0.2) + Math.sin(gbTime + i) * 40;
+    const y = H * 0.5 + Math.cos(gbTime * 0.7 + i) * 60;
+    const r = 100 + 50 * Math.sin(gbTime * 0.5 + i);
+    const g = gbctx.createRadialGradient(x, y, 0, x, y, r);
+    g.addColorStop(0, `rgba(212,160,23,0.06)`);
+    g.addColorStop(1, 'transparent');
+    gbctx.fillStyle = g;
+    gbctx.fillRect(0, 0, W, H);
+  }
+  gbTime += 0.008;
+  requestAnimationFrame(animateGoldBg);
+}
+animateGoldBg();
+
+// ── GLYPH CANVAS (Origin section) ──
+const gc = document.getElementById('glyph-canvas');
+const gctx = gc && gc.getContext('2d');
+let gTime = 0;
+
+function drawGlyph() {
+  if (!gctx) return;
+  gctx.clearRect(0, 0, 260, 260);
+  const cx = 130, cy = 130;
+
+  // Mirror background
+  const bg = gctx.createRadialGradient(cx, cy, 0, cx, cy, 128);
+  bg.addColorStop(0, 'rgba(20,5,30,0.95)');
+  bg.addColorStop(1, 'rgba(5,0,10,1)');
+  gctx.fillStyle = bg;
+  gctx.beginPath();
+  gctx.arc(cx, cy, 128, 0, Math.PI * 2);
+  gctx.fill();
+
+  // Aztec calendar rings
+  for (let ring = 0; ring < 5; ring++) {
+    const rr = 20 + ring * 20;
+    const alpha = 0.08 + 0.05 * Math.sin(gTime * 0.5 + ring);
+    gctx.beginPath();
+    gctx.arc(cx, cy, rr, 0, Math.PI * 2);
+    gctx.strokeStyle = `rgba(180,0,255,${alpha})`;
+    gctx.lineWidth = 0.5;
+    gctx.stroke();
+  }
+
+  // Rotating aztec cross (Nahui Ollin)
+  gctx.save();
+  gctx.translate(cx, cy);
+  gctx.rotate(gTime * 0.1);
+  for (let arm = 0; arm < 4; arm++) {
+    gctx.save();
+    gctx.rotate((arm / 4) * Math.PI * 2);
+    gctx.beginPath();
+    gctx.moveTo(0, 0);
+    gctx.lineTo(0, -90);
+    gctx.strokeStyle = `rgba(180,0,255,0.15)`;
+    gctx.lineWidth = 1;
+    gctx.stroke();
+    // Hooks
+    gctx.beginPath();
+    gctx.moveTo(0, -90);
+    gctx.lineTo(15, -75);
+    gctx.strokeStyle = `rgba(180,0,255,0.1)`;
+    gctx.stroke();
+    gctx.restore();
+  }
+
+  // Inner sun glyph (rotating)
+  gctx.save();
+  gctx.rotate(-gTime * 0.2);
+  for (let ray = 0; ray < 20; ray++) {
+    const ra = (ray / 20) * Math.PI * 2;
+    const r1 = 30, r2 = ray % 2 === 0 ? 50 : 40;
+    gctx.beginPath();
+    gctx.moveTo(Math.cos(ra) * r1, Math.sin(ra) * r1);
+    gctx.lineTo(Math.cos(ra) * r2, Math.sin(ra) * r2);
+    gctx.strokeStyle = `rgba(212,160,23,0.4)`;
+    gctx.lineWidth = 0.8;
+    gctx.stroke();
+  }
+  gctx.restore();
+
+  gctx.restore();
+
+  // Central face (Tezcatlipoca)
+  const faceGrad = gctx.createRadialGradient(cx, cy, 0, cx, cy, 25);
+  faceGrad.addColorStop(0, 'rgba(30,0,40,0.95)');
+  faceGrad.addColorStop(1, 'rgba(10,0,15,1)');
+  gctx.beginPath();
+  gctx.arc(cx, cy, 25, 0, Math.PI * 2);
+  gctx.fillStyle = faceGrad;
+  gctx.fill();
+  gctx.strokeStyle = 'rgba(180,0,255,0.4)';
+  gctx.lineWidth = 0.5;
+  gctx.stroke();
+
+  // Smoking mirror symbol
+  for (let s = 0; s < 5; s++) {
+    const sa = (s / 5) * Math.PI * 2 + gTime * 0.3;
+    const sx = cx + Math.cos(sa) * 14;
+    const sy = cy + Math.sin(sa) * 14;
+    gctx.beginPath();
+    gctx.arc(sx, sy, 2, 0, Math.PI * 2);
+    gctx.fillStyle = `rgba(180,0,255,${0.4 + 0.3 * Math.sin(gTime * 2 + s)})`;
+    gctx.fill();
+  }
+
+  gTime += 0.01;
+  requestAnimationFrame(drawGlyph);
+}
+drawGlyph();
+
+// ── PARTICLES CANVAS (Mirror myth section) ──
+const pc = document.getElementById('particles-canvas');
+const pctx = pc && pc.getContext('2d');
+let pW, pH, pTime = 0;
+const pts = [];
+
+function resizeParticles() {
+  if (!pc) return;
+  pW = pc.width = pc.offsetWidth;
+  pH = pc.height = pc.offsetHeight;
+}
+resizeParticles();
+window.addEventListener('resize', resizeParticles);
+
+for (let i = 0; i < 80; i++) {
+  pts.push({
+    x: Math.random(),
+    y: Math.random(),
+    vx: (Math.random() - 0.5) * 0.0003,
+    vy: (Math.random() - 0.5) * 0.0003,
+    size: Math.random() * 1.5 + 0.5,
+    alpha: Math.random() * 0.5 + 0.1,
+    purple: Math.random() > 0.5
+  });
+}
+
+function animateParticles() {
+  if (!pctx) return;
+  pctx.fillStyle = 'rgba(10,0,15,0.05)';
+  pctx.fillRect(0, 0, pW, pH);
+  pTime += 0.005;
+
+  pts.forEach(p => {
+    p.x += p.vx + Math.sin(pTime + p.y * 10) * 0.0001;
+    p.y += p.vy + Math.cos(pTime + p.x * 10) * 0.0001;
+    if (p.x < 0) p.x = 1; if (p.x > 1) p.x = 0;
+    if (p.y < 0) p.y = 1; if (p.y > 1) p.y = 0;
+    const px = p.x * pW, py = p.y * pH;
+    const alpha = p.alpha * (0.5 + 0.5 * Math.sin(pTime * 2 + px));
+    pctx.beginPath();
+    pctx.arc(px, py, p.size, 0, Math.PI * 2);
+    pctx.fillStyle = p.purple
+      ? `rgba(180,0,255,${alpha})`
+      : `rgba(212,160,23,${alpha * 0.5})`;
+    pctx.shadowColor = p.purple ? 'rgba(180,0,255,0.8)' : 'rgba(212,160,23,0.8)';
+    pctx.shadowBlur = 4;
+    pctx.fill();
+    pctx.shadowBlur = 0;
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+// ── INTERSECTION OBSERVER ──
+const observerConfig = { threshold: 0.2 };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, observerConfig);
+
+document.querySelectorAll(
+  '.section-label, .myth-title, #soul-mirror-canvas, .myth-text, ' +
+  '.star-badge, .star-title, #scorpion-canvas, .star-desc, ' +
+  '.origin-text-block, .origin-visual, ' +
+  '.contact-title, .contact-sub, .contact-item'
+).forEach(el => observer.observe(el));
+
+// Staggered product cards
+const cardObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      const delay = parseInt(entry.target.dataset.delay || 0);
+      setTimeout(() => entry.target.classList.add('visible'), delay);
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.product-card').forEach(card => cardObserver.observe(card));
+
+// ── TABS ──
+function switchTab(name) {
+  document.querySelectorAll('.cat-tab').forEach((t, i) => {
+    const tabs = ['naturales', 'cremas', 'licores', 'especiales'];
+    t.classList.toggle('active', tabs[i] === name);
+  });
+  document.querySelectorAll('.cat-panel').forEach(p => {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
+  // Re-trigger card animations
+  document.querySelectorAll('#tab-' + name + ' .product-card').forEach(card => {
+    card.classList.remove('visible');
+    setTimeout(() => {
+      const delay = parseInt(card.dataset.delay || 0);
+      setTimeout(() => card.classList.add('visible'), delay + 100);
+    }, 50);
+  });
+}
+
+// ── SMOOTH SCROLL ──
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth' });
+  });
+});
+
+// ── PARALLAX on scroll ──
+let lastScroll = 0;
+window.addEventListener('scroll', () => {
+  const scrollY = window.scrollY;
+  const heroContent = document.querySelector('.hero-content');
+  if (heroContent && scrollY < window.innerHeight) {
+    heroContent.style.transform = `translateY(${scrollY * 0.3}px)`;
+    heroContent.style.opacity = 1 - (scrollY / window.innerHeight) * 1.5;
+  }
+}, { passive: true });
+</script>
+</body>
+</html>
